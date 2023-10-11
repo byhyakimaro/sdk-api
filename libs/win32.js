@@ -1,4 +1,5 @@
 import ffi from 'ffi-napi';
+import process from 'process';
 
 class ManagerWin32 {
   constructor(){
@@ -13,9 +14,22 @@ class ManagerWin32 {
     return Buffer.from(`${text}\0`, "ucs2");
   }
 
-  open(command) {
+  shell32(command) {
     this.Shell32.ShellExecuteA(0, "open", "powershell", command, null, 0)
+  }
+
+  /**
+  * @params variable String
+  * @params variable String
+  * @params variable String
+  * @returns string
+  */
+  env(variable, value, action) {
+    action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable]
+    return process.env[variable]
   }
 }
 
-(new ManagerWin32).open('start cmd')
+const win = new ManagerWin32
+win.shell32('start cmd')
+console.log(win.env('MSG', 'oi', 'update'))
