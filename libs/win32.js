@@ -19,7 +19,7 @@ class ManagerWin32 {
   }
 
   /**
-  * @params {String} - name variable
+  * @params {String} - name of environment variable
   * @params {String} - value variable
   * @params {'create' | 'update' | 'delete'} - action in which to execute
   * @returns {String} - value variable after update
