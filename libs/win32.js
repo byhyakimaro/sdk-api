@@ -21,7 +21,7 @@ class ManagerWin32 {
   /**
   * @params {String} - name variable
   * @params {String} - value variable
-  * @params {'create' | 'update' | 'delete'} - action
+  * @params {'create' | 'update' | 'delete'} - action in which to execute
   * @returns {String} - value variable
   */
   env(variable, value, action) {
