@@ -22,7 +22,7 @@ class ManagerWin32 {
   * @params {String} - name variable
   * @params {String} - value variable
   * @params {'create' | 'update' | 'delete'} - action in which to execute
-  * @returns {String} - value variable
+  * @returns {String} - value variable after update
   */
   env(variable, value, action) {
     action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable]
