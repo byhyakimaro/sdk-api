@@ -1,12 +1,12 @@
 import ffi from 'ffi-napi';
 import process from 'process';
-import { exec } from 'child_process';
+import sudo from 'sudo-prompt';
 
 export default class ManagerWin32 {
-  constructor(){
-    this.Shell32 = new ffi.Library("Shell32",{
+  constructor() {
+    this.Shell32 = new ffi.Library("Shell32", {
       "ShellExecuteA": [
-        "int32", ["int32","string","string","string","string","int"]
+        "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
     });
   };
@@ -37,34 +37,18 @@ export default class ManagerWin32 {
   * @params {String} - command execute in background example: '"C:\Program Files\Git\git-bash.exe" "--cd=%v."'
   * @returns {String} - result of register
   */
-  regEditBg(nameContext, TitleContext, IconPath, command){
+  regEditBg(nameContext, TitleContext, IconPath, command) {
     const registerPathIcon = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}`;
     const registerIcon = `reg add "${registerPathIcon}" /v "${TitleContext}" /t REG_SZ /d "${IconPath}" /f`;
-    
+
     const registerPathCommand = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}\\command`;
     const registerCommand = `reg add "${registerPathCommand}" /t REG_SZ /d "${command}" /f`;
-  
-    exec(registerIcon, (err, stdout, stderr) => {
-      if (err) {
-        console.error(`Err: ${err.message}`);
-        return;
+
+    sudo.exec(`${registerIcon} | ${registerCommand}`, { name: 'PathIcon' },
+      function (error, stdout, stderr) {
+        if (error) throw error;
+        console.log('stdout: ' + stdout);
       }
-      if (stderr) {
-        console.error(`Err: ${stderr}`);
-        return;
-      }
-      console.log(`Registro do Windows aberto com a chave do registro selecionada: ${registerIcon}`);
-      exec(registerCommand, (err, stdout, stderr) => {
-        if (err) {
-          console.error(`Err: ${err.message}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Err: ${stderr}`);
-          return;
-        }
-        console.log(`Registro do Windows aberto com a chave do registro selecionada: ${registerCommand}`);
-      });
-    });
+    );
   };
 };

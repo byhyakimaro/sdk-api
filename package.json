@@ -4,9 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "ffi-napi": "^4.0.3"
+    "ffi-napi": "^4.0.3",
+    "sudo-prompt": "^9.2.1"
   },
-  "type" : "module",
+  "type": "module",
   "devDependencies": {},
   "scripts": {
     "adm": "powershell -Command Start-Process powershell -ArgumentList '-NoExit -Command Set-Location \"E:\\Projetos\\NodeJS\\sdk_api\"' -Verb RunAs"
