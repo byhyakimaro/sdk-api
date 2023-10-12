@@ -27,37 +27,31 @@ export default class ManagerWin32 {
     const STATUS_SUCCESS = 0;
     const SystemProcessInformation = 5;
 
-    let bufferSize = 4096; // Tamanho inicial do buffer
+    let bufferSize = 4096;
     let buffer = Buffer.alloc(bufferSize);
     let status;
 
     do {
-      buffer = Buffer.alloc(bufferSize); // Alocando um novo buffer
-      status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
+      buffer = Buffer.alloc(bufferSize);
+      const returnLength = Buffer.alloc(4);
+      status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
       if (status === STATUS_SUCCESS) {
-        let offset = 0;
-        do {
-          const nextEntryOffset = buffer.readUInt32LE(offset);
-          const imageNameLength = buffer.readUInt16LE(offset + 0x38); // Offset do tamanho do nome do processo
-          const processName = buffer.toString('ucs2', offset + 0x40, offset + 0x40 + imageNameLength); // Offset do início do nome do processo
-
+        const processCount = buffer.readUInt32LE(0x00);
+        let offset = 0x04;
+        for (let i = 0; i < processCount; i++) {
+          const imageNameLength = buffer.readUInt16LE(offset + 0x38);
+          const processName = buffer.toString('utf16le', offset + 0x40, offset + 0x40 + (imageNameLength * 2));
+          
           console.log('Processo encontrado:', processName);
-          if (processName.toLowerCase() === 'notepad.exe') {
-            // Faça algo com o processo 'notepad.exe' encontrado
-            console.log('Processo encontrado:', processName);
-            break;
-          }
-
-          offset += nextEntryOffset;
-        } while (offset !== 0);
-        break; // Sair do loop, pois obtivemos as informações com sucesso
+      
+          offset += buffer.readUInt32LE(offset);
+        }
       } else if (status === 0xC0000004) {
-        // STATUS_INFO_LENGTH_MISMATCH, aumente o tamanho do buffer
         bufferSize *= 2;
       } else {
         console.error('Erro ao chamar NtQuerySystemInformation:', status);
-        break; // Sair do loop em caso de outro erro
+        break;
       }
     } while (status === 0xC0000004);
   }
