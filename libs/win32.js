@@ -37,13 +37,15 @@ export default class ManagerWin32 {
 
     if (status === STATUS_SUCCESS) {
       const processCount = buffer.readUInt32LE(0x00);
-      let offset = 0x04;
+      let NextEntryOffset = 0x00;
+      let ImageName = 0x38;
 
       for (let i = 0; i < processCount; i++) {
-        const imageNameLength = buffer.readUInt16LE(offset + 0x38);
-        console.log(imageNameLength);
+        const processNameOffset = buffer.readUInt32LE(NextEntryOffset + ImageName);
+        const imageNameLength = buffer.readUInt16LE(processNameOffset);
+        console.log(processNameOffset);
 
-        offset += buffer.readUInt32LE(offset);
+        NextEntryOffset += buffer.readUInt32LE(NextEntryOffset);
         break;
       }
     } else {
