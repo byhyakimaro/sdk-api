@@ -29,28 +29,26 @@ export default class ManagerWin32 {
 
     const buffer = Buffer.alloc(4096); // Tamanho do buffer, você pode ajustar conforme necessário
 
-    function getProcessList() {
-      const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
+    const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
 
-      if (status === STATUS_SUCCESS) {
-        let offset = 0;
-        while (true) {
-          const entry = buffer.readUInt32LE(offset);
-          const nextEntryOffset = buffer.readUInt32LE(offset + 4);
-          const imageNamePtr = buffer.readUInt32LE(offset + 8);
-          const imageNameLength = buffer.readUInt16LE(offset + 12) / 2; // dividido por 2 pois cada caractere é de 2 bytes
-          const imageName = buffer.toString('ucs2', imageNamePtr, imageNamePtr + imageNameLength);
+    if (status === STATUS_SUCCESS) {
+      let offset = 0;
+      while (true) {
+        const entry = buffer.readUInt32LE(offset);
+        const nextEntryOffset = buffer.readUInt32LE(offset + 4);
+        const imageNamePtr = buffer.readUInt32LE(offset + 8);
+        const imageNameLength = buffer.readUInt16LE(offset + 12) / 2; // dividido por 2 pois cada caractere é de 2 bytes
+        const imageName = buffer.toString('ucs2', imageNamePtr, imageNamePtr + imageNameLength);
 
-          console.log('Processo:', imageName);
+        console.log('Processo:', imageName);
 
-          if (nextEntryOffset === 0) {
-            break;
-          }
-          offset += nextEntryOffset;
+        if (nextEntryOffset === 0) {
+          break;
         }
-      } else {
-        console.error('Erro ao chamar NtQuerySystemInformation:', status);
+        offset += nextEntryOffset;
       }
+    } else {
+      console.error('Erro ao chamar NtQuerySystemInformation:', status);
     }
   }
 
