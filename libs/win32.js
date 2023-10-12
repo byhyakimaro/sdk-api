@@ -30,20 +30,22 @@ export default class ManagerWin32 {
     let bufferSize = 4096;
     let buffer = Buffer.alloc(bufferSize);
     let status;
+
     do {
       buffer = Buffer.alloc(bufferSize);
       const returnLength = Buffer.alloc(4);
       status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
       if (status === STATUS_SUCCESS) {
-        const processCount = buffer.readUInt32LE(0x00);
-        let offset = 0x04;
+        const processCount = buffer.readUInt32LE(0);
+        let offset = 4;
+
         for (let i = 0; i < processCount; i++) {
           const imageNameLength = buffer.readUInt16LE(offset + 0x38);
           const processName = buffer.toString('utf16le', offset + 0x40, offset + 0x40 + (imageNameLength * 2));
-          
+
           console.log('Processo encontrado:', processName);
-      
+
           offset += buffer.readUInt32LE(offset);
         }
       } else if (status === 0xC0000004) {
@@ -55,36 +57,36 @@ export default class ManagerWin32 {
     } while (status === 0xC0000004);
   }
 
-  /**
-  * @params {String} - name of environment variable
-  * @params {String} - value variable
-  * @params {'create' | 'update' | 'delete'} - action in which to execute
-  * @returns {String} - value variable after update
-  */
-  env(variable, value, action) {
-    action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable];
-    return process.env[variable];
-  };
+/**
+* @params {String} - name of environment variable
+* @params {String} - value variable
+* @params {'create' | 'update' | 'delete'} - action in which to execute
+* @returns {String} - value variable after update
+*/
+env(variable, value, action) {
+  action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable];
+  return process.env[variable];
+};
 
-  /**
-  * @params {String} - name of context regedit
-  * @params {String} - Title of context
-  * @params {String} - Icon path example: "C:\\Windows\\system32\\cmd.exe"
-  * @params {String} - command execute in background example: '"C:\Program Files\Git\git-bash.exe" "--cd=%v."'
-  * @returns {String} - result of register
-  */
-  regEditBg(nameContext, TitleContext, IconPath, command) {
-    const registerPathIcon = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}`;
-    const registerIcon = `reg add "${registerPathIcon}" /v "${TitleContext}" /t REG_SZ /d "${IconPath}" /f`;
+/**
+* @params {String} - name of context regedit
+* @params {String} - Title of context
+* @params {String} - Icon path example: "C:\\Windows\\system32\\cmd.exe"
+* @params {String} - command execute in background example: '"C:\Program Files\Git\git-bash.exe" "--cd=%v."'
+* @returns {String} - result of register
+*/
+regEditBg(nameContext, TitleContext, IconPath, command) {
+  const registerPathIcon = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}`;
+  const registerIcon = `reg add "${registerPathIcon}" /v "${TitleContext}" /t REG_SZ /d "${IconPath}" /f`;
 
-    const registerPathCommand = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}\\command`;
-    const registerCommand = `reg add "${registerPathCommand}" /t REG_SZ /d "${command}" /f`;
+  const registerPathCommand = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}\\command`;
+  const registerCommand = `reg add "${registerPathCommand}" /t REG_SZ /d "${command}" /f`;
 
-    sudo.exec(`${registerIcon} | ${registerCommand}`, { name: 'PathIcon' },
-      function (error, stdout, stderr) {
-        if (error) throw error;
-        console.log('stdout: ' + stdout);
-      }
-    );
-  };
+  sudo.exec(`${registerIcon} | ${registerCommand}`, { name: 'PathIcon' },
+    function (error, stdout, stderr) {
+      if (error) throw error;
+      console.log('stdout: ' + stdout);
+    }
+  );
+};
 };
