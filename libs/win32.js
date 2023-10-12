@@ -30,7 +30,6 @@ export default class ManagerWin32 {
     let bufferSize = 4096;
     let buffer = Buffer.alloc(bufferSize);
     let status;
-
     do {
       buffer = Buffer.alloc(bufferSize); // Alocando um novo buffer
       status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
@@ -38,8 +37,8 @@ export default class ManagerWin32 {
       if (status === STATUS_SUCCESS) {
         let offset = 0;
         do {
-          const imageNameLength = buffer.readUInt16LE(offset + 0x38); // Offset do tamanho do nome do processo
-          const processName = buffer.toString('ucs2', offset + 0x40, offset + 0x40 + imageNameLength); // Offset do início do nome do processo
+          const imageNameLength = buffer.readUInt16LE(offset + 0x38);
+          const processName = buffer.toString('ucs2', offset + 0x40, offset + 0x40 + imageNameLength);
           
           console.log('Processo encontrado:', processName);
           
