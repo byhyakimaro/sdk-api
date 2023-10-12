@@ -38,10 +38,12 @@ export default class ManagerWin32 {
       if (status === STATUS_SUCCESS) {
         let offset = 0;
         do {
-          const nextEntryOffset = buffer.readUInt32LE(offset);
           const imageNameLength = buffer.readUInt16LE(offset + 0x38); // Offset do tamanho do nome do processo
           const processName = buffer.toString('ucs2', offset + 0x40, offset + 0x40 + imageNameLength); // Offset do início do nome do processo
+          
           console.log('Processo encontrado:', processName);
+          
+          const nextEntryOffset = buffer.readUInt32LE(offset);
           offset += nextEntryOffset;
         } while (offset !== 0);
         break; // Sair do loop, pois obtivemos as informações com sucesso
