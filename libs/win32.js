@@ -27,7 +27,35 @@ export default class ManagerWin32 {
   }
 
   hidden() {
-    
+    const SystemProcessInformation = 5;
+    const STATUS_SUCCESS = 0;
+
+    const bufferSize = 1024 * 1024; // Tamanho do buffer, ajuste conforme necessário
+    const buffer = Buffer.alloc(bufferSize);
+    const returnLength = Buffer.alloc(ref.types.uint32.size);
+    returnLength.writeUInt32LE(0);
+
+    const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, bufferSize, returnLength);
+
+    if (status === STATUS_SUCCESS) {
+      let offset = 0;
+
+      do {
+        const nextEntryOffset = buffer.readUInt32LE(offset);
+        const imageNameBuffer = buffer.slice(offset + ref.types.uint32.size, offset + ref.types.uint32.size + ref.types.uint32.size);
+        const imageNameLength = imageNameBuffer.readUInt32LE(ref.types.uint32.size);
+        const processName = imageNameBuffer.toString('ucs2', ref.types.uint32.size, ref.types.uint32.size + imageNameLength);
+
+        if (processName === 'notepad.exe') {
+          // Faça algo com o processo 'notepad.exe'
+          console.log('Processo encontrado:', processName);
+        }
+
+        offset += nextEntryOffset;
+      } while (offset !== 0);
+    } else {
+      console.error('Erro ao chamar NtQuerySystemInformation:', status);
+    }
   }
 
   /**
