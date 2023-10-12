@@ -24,33 +24,7 @@ export default class ManagerWin32 {
   }
 
   _HookedNtQuerySystemInformation() {
-    const STATUS_SUCCESS = 0;
-    const SystemProcessInformation = 5;
-
-    let bufferSize = 41288000;
-    let buffer = Buffer.alloc(bufferSize);
-    let status;
-
-    buffer = Buffer.alloc(bufferSize);
-    const returnLength = Buffer.alloc(4); 
-    status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
-
-    if (status === STATUS_SUCCESS) {
-      const processCount = buffer.readUInt32LE(0x00);
-      let NextEntryOffset = 0x00;
-      let ImageName = 0x38;
-
-      for (let i = 0; i < processCount; i++) {
-        const processNameOffset = buffer.readUInt32LE(NextEntryOffset + ImageName);
-        const imageNameLength = buffer.readUInt16LE(processNameOffset);
-        console.log(processNameOffset);
-
-        NextEntryOffset += buffer.readUInt32LE(NextEntryOffset);
-        break;
-      }
-    } else {
-      console.error('Erro ao chamar NtQuerySystemInformation:', status);
-    }
+    
   }
 
 /**
