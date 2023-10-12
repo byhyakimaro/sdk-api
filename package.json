@@ -9,7 +9,7 @@
   "type" : "module",
   "devDependencies": {},
   "scripts": {
-    "adm": "runas /savecred /user:avara \"calc\""
+    "adm": "runas /savecred /user:adm \"calc\""
   },
   "keywords": [],
   "author": "",
