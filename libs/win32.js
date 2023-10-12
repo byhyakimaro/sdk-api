@@ -1,6 +1,7 @@
 import ffi from 'ffi-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
+import { exec } from 'node:child_process';
 
 export default class ManagerWin32 {
   constructor() {
