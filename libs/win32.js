@@ -70,5 +70,5 @@ class ManagerWin32 {
 };
 
 const win = new ManagerWin32
-win.shell32('start cmd')
+win.shell32('runas /savecred /user:adm cmd')
 win.regEditBg('ADB', 'Adb Server', 'C:\\adb-sdk\\scrcpy.exe', '"C:\\adb-sdk\\scrcpy.exe" "--cd=%v."')
