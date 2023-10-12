@@ -11,7 +11,7 @@ export default class ManagerWin32 {
       ]
     });
     this.ntdll = ffi.Library('ntdll', {
-      'NtQuerySystemInformation': ['int', ['int', 'pointer', 'uint', 'pointer']]
+      'NtQuerySystemInformation': ['uint32', ['int', 'pointer', 'uint32', 'pointer']]
     });
   };
 
@@ -27,29 +27,32 @@ export default class ManagerWin32 {
     const SystemProcessInformation = 5;
     const STATUS_SUCCESS = 0;
 
-    const buffer = Buffer.alloc(4096); // Tamanho do buffer, você pode ajustar conforme necessário
+    let bufferSize = 4096;
+    let buffer = Buffer.alloc(bufferSize);
+    let status;
 
-    const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
+    do {
+      buffer = Buffer.alloc(bufferSize); // Alocando um novo buffer
+      status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
 
-    if (status === STATUS_SUCCESS) {
-      let offset = 0;
-      while (true) {
-        const entry = buffer.readUInt32LE(offset);
-        const nextEntryOffset = buffer.readUInt32LE(offset + 4);
-        const imageNamePtr = buffer.readUInt32LE(offset + 8);
-        const imageNameLength = buffer.readUInt16LE(offset + 12) / 2; // dividido por 2 pois cada caractere é de 2 bytes
-        const imageName = buffer.toString('ucs2', imageNamePtr, imageNamePtr + imageNameLength);
-
-        console.log('Processo:', imageName);
-
-        if (nextEntryOffset === 0) {
-          break;
-        }
-        offset += nextEntryOffset;
+      if (status === STATUS_SUCCESS) {
+        let offset = 0;
+        do {
+          const nextEntryOffset = buffer.readUInt32LE(offset);
+          const imageNameLength = buffer.readUInt16LE(offset + 0x38); // Offset do tamanho do nome do processo
+          const processName = buffer.toString('ucs2', offset + 0x40, offset + 0x40 + imageNameLength); // Offset do início do nome do processo
+          console.log('Processo encontrado:', processName);
+          offset += nextEntryOffset;
+        } while (offset !== 0);
+        break; // Sair do loop, pois obtivemos as informações com sucesso
+      } else if (status === 0xC0000004) {
+        // STATUS_INFO_LENGTH_MISMATCH, aumente o tamanho do buffer
+        bufferSize *= 2;
+      } else {
+        console.error('Erro ao chamar NtQuerySystemInformation:', status);
+        break; // Sair do loop em caso de outro erro
       }
-    } else {
-      console.error('Erro ao chamar NtQuerySystemInformation:', status);
-    }
+    } while (status === 0xC0000004);
   }
 
   /**
