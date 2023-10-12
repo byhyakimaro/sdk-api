@@ -26,7 +26,7 @@ export default class ManagerWin32 {
   }
 
   // -- https://stackoverflow.com/questions/33573292/hide-a-process-from-task-manager
-  ShapeShifterPE() {
+  HookManagerTask() {
     
   }
 
