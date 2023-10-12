@@ -1,4 +1,4 @@
-import ManagerWin32 from "./libs/win32";
+import ManagerWin32 from "./libs/win32.js";
 
 const win = new ManagerWin32
 win.shell32('runas /savecred /user:adm cmd')
