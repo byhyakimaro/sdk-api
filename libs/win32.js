@@ -41,10 +41,7 @@ export default class ManagerWin32 {
         let offset = 4;
 
         for (let i = 0; i < processCount; i++) {
-          const imageNameLength = buffer.readUInt16LE(offset + 0x38);
-          const processName = buffer.toString('utf16le', offset + 0x40, offset + 0x40 + (imageNameLength * 2));
-
-          console.log('Processo encontrado:', processName);
+          console.log('Raw Data in Buffer:', buffer.toString('hex'));
 
           offset += buffer.readUInt32LE(offset);
         }
