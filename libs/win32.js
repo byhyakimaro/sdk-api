@@ -36,8 +36,8 @@ export default class ManagerWin32 {
     status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
     if (status === STATUS_SUCCESS) {
-      const processCount = buffer.readUInt32LE(0);
-      let offset = 4;
+      const processCount = buffer.readUInt32LE(0x00);
+      let offset = 0x04;
 
       for (let i = 0; i < processCount; i++) {
         const imageNameLength = buffer.readUInt16LE(offset + 0x38);
