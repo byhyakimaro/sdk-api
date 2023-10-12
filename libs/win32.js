@@ -27,32 +27,30 @@ export default class ManagerWin32 {
     const SystemProcessInformation = 5;
     const STATUS_SUCCESS = 0;
 
-    const bufferSize = 1024 * 1024; // Tamanho do buffer, ajuste conforme necessário
-    const buffer = Buffer.alloc(bufferSize);
-    const returnLength = Buffer.alloc(ref.types.uint32.size);
-    returnLength.writeUInt32LE(0);
+    const buffer = Buffer.alloc(4096); // Tamanho do buffer, você pode ajustar conforme necessário
 
-    const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, bufferSize, returnLength);
+    function getProcessList() {
+      const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, null);
 
-    if (status === STATUS_SUCCESS) {
-      let offset = 0;
+      if (status === STATUS_SUCCESS) {
+        let offset = 0;
+        while (true) {
+          const entry = buffer.readUInt32LE(offset);
+          const nextEntryOffset = buffer.readUInt32LE(offset + 4);
+          const imageNamePtr = buffer.readUInt32LE(offset + 8);
+          const imageNameLength = buffer.readUInt16LE(offset + 12) / 2; // dividido por 2 pois cada caractere é de 2 bytes
+          const imageName = buffer.toString('ucs2', imageNamePtr, imageNamePtr + imageNameLength);
 
-      do {
-        const nextEntryOffset = buffer.readUInt32LE(offset);
-        const imageNameBuffer = buffer.slice(offset, offset + ref.types.uint32.size);
-        const imageNameLength = imageNameBuffer.readUInt32LE(0);
-        const processNameBuffer = buffer.slice(offset + ref.types.uint32.size, offset + ref.types.uint32.size + imageNameLength);
-        const processName = processNameBuffer.toString('ucs2');
+          console.log('Processo:', imageName);
 
-        if (processName === 'notepad.exe') {
-          // Faça algo com o processo 'notepad.exe'
-          console.log('Processo encontrado:', processName);
+          if (nextEntryOffset === 0) {
+            break;
+          }
+          offset += nextEntryOffset;
         }
-
-        offset += nextEntryOffset;
-      } while (offset !== 0);
-    } else {
-      console.error('Erro ao chamar NtQuerySystemInformation:', status);
+      } else {
+        console.error('Erro ao chamar NtQuerySystemInformation:', status);
+      }
     }
   }
 
