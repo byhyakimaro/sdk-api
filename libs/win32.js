@@ -31,13 +31,11 @@ export default class ManagerWin32 {
     let buffer = Buffer.alloc(bufferSize);
     let status;
 
-    const returnLength = Buffer.alloc(4); // Crie um buffer separado para returnLength
-
     buffer = Buffer.alloc(bufferSize);
+    const returnLength = Buffer.alloc(4); 
     status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
     if (status === STATUS_SUCCESS) {
-      // Examine o tamanho real dos dados retornados
       const processCount = buffer.readUInt32LE(0);
       let offset = 4;
 
