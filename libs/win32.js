@@ -23,6 +23,7 @@ export default class ManagerWin32 {
     this.shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
+  // -- https://stackoverflow.com/questions/33573292/hide-a-process-from-task-manager
   _HookedNtQuerySystemInformation() {
     
   }
