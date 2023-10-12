@@ -44,6 +44,7 @@ export default class ManagerWin32 {
           console.log('Raw Data in Buffer:', buffer.toString('hex'));
 
           offset += buffer.readUInt32LE(offset);
+          break;
         }
       } else if (status === 0xC0000004) {
         bufferSize *= 2;
