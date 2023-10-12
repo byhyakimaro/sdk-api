@@ -36,13 +36,13 @@ export default class ManagerWin32 {
     status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
     if (status === STATUS_SUCCESS) {
-      const processCount = buffer.readUInt32LE(0);
+      const processCount = buffer.readUInt32LE(0x00);
       let offset = 4;
 
       for (let i = 0; i < processCount; i++) {
-        const imageNameLength = buffer.toString('utf16le');
+        const processName = buffer.toString('utf16le');
 
-        console.log(imageNameLength);
+        console.log(processName);
         offset += buffer.readUInt32LE(offset);
         break;
       }
