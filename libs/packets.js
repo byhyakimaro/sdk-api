@@ -1,0 +1,3 @@
+class ManagerPackets {
+  constructor() {};
+}
