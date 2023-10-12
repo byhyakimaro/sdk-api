@@ -27,32 +27,30 @@ export default class ManagerWin32 {
     const STATUS_SUCCESS = 0;
     const SystemProcessInformation = 5;
 
-    let bufferSize = 4096;
+    let bufferSize = 412880;
     let buffer = Buffer.alloc(bufferSize);
     let status;
 
-    do {
-      buffer = Buffer.alloc(bufferSize);
-      const returnLength = Buffer.alloc(4);
-      status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
+    const returnLength = Buffer.alloc(4); // Crie um buffer separado para returnLength
 
-      if (status === STATUS_SUCCESS) {
-        const processCount = buffer.readUInt32LE(0);
-        let offset = 4;
+    buffer = Buffer.alloc(bufferSize);
+    status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, buffer.length, returnLength);
 
-        for (let i = 0; i < processCount; i++) {
-          console.log('Raw Data in Buffer:', buffer.toString('hex'));
+    if (status === STATUS_SUCCESS) {
+      // Examine o tamanho real dos dados retornados
+      const processCount = buffer.readUInt32LE(0);
+      let offset = 4;
 
-          offset += buffer.readUInt32LE(offset);
-          break;
-        }
-      } else if (status === 0xC0000004) {
-        bufferSize *= 2;
-      } else {
-        console.error('Erro ao chamar NtQuerySystemInformation:', status);
+      for (let i = 0; i < processCount; i++) {
+        const imageNameLength = buffer.readUInt16LE(offset + 0x38);
+
+        console.log(imageNameLength);
+        offset += buffer.readUInt32LE(offset);
         break;
       }
-    } while (status === 0xC0000004);
+    } else {
+      console.error('Erro ao chamar NtQuerySystemInformation:', status);
+    }
   }
 
 /**
