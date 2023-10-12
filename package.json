@@ -9,7 +9,7 @@
   "type" : "module",
   "devDependencies": {},
   "scripts": {
-    "adm": "runas /savecred /user:adm \"powershell -NoExit -Command cd \"E:\\Projetos\\NodeJS\\sdk_api\\\""
+    "adm": "powershell -Command Start-Process powershell -ArgumentList '-NoExit -Command Set-Location \"E:\\Projetos\\NodeJS\\sdk_api\"' -Verb RunAs"
   },
   "keywords": [],
   "author": "",
