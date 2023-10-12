@@ -25,6 +25,10 @@ export default class ManagerWin32 {
     this.shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
+  CreateProcessA() {
+    
+  }
+
   /**
   * @params {String} - name of environment variable
   * @params {String} - value variable
