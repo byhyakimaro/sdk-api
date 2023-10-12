@@ -2,8 +2,6 @@ import ffi from 'ffi-napi';
 import ref from 'ref-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
-import ref from 'ref';
-import StructType from 'ref-struct';
 import { exec } from 'node:child_process';
 
 export default class ManagerWin32 {
