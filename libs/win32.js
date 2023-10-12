@@ -2,7 +2,7 @@ import ffi from 'ffi-napi';
 import process from 'process';
 import { exec } from 'child_process';
 
-class ManagerWin32 {
+export default class ManagerWin32 {
   constructor(){
     this.Shell32 = new ffi.Library("Shell32",{
       "ShellExecuteA": [
@@ -68,7 +68,3 @@ class ManagerWin32 {
     });
   };
 };
-
-const win = new ManagerWin32
-win.shell32('runas /savecred /user:adm cmd')
-win.regEditBg('ADB', 'Adb Server', 'C:\\Windows\\system32\\cmd.exe', 'wscript \"C:\\adb-sdk\\scrcpy-noconsole.vbs\"')
