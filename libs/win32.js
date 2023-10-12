@@ -1,4 +1,5 @@
 import ffi from 'ffi-napi';
+import ref from 'ref-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
 
@@ -8,12 +9,6 @@ export default class ManagerWin32 {
       "ShellExecuteA": [
         "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
-    });
-    this.kernel32 = ffi.Library('kernel32', {
-      'OpenProcess': ['pointer', ['int', 'int', 'int']],
-      'VirtualAllocEx': ['pointer', ['pointer', 'pointer', 'int', 'int', 'int']],
-      'WriteProcessMemory': ['int', ['pointer', 'pointer', 'string', 'int', 'int']],
-      'CreateRemoteThread': ['pointer', ['pointer', 'pointer', 'int', 'pointer', 'pointer', 'int', 'pointer']]
     });
   };
 
