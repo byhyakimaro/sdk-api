@@ -9,7 +9,7 @@
   "type" : "module",
   "devDependencies": {},
   "scripts": {
-    "adm": "runas /savecred /user:adm \"cmd"
+    "adm": "runas /savecred /user:adm cmd"
   },
   "keywords": [],
   "author": "",
