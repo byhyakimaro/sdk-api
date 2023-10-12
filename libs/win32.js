@@ -40,9 +40,9 @@ export default class ManagerWin32 {
       let offset = 4;
 
       for (let i = 0; i < processCount; i++) {
-        const processName = buffer.toString('utf16le');
+        const imageNameLength = buffer.readUInt16LE(offset + 0x38);
+        console.log(imageNameLength);
 
-        console.log(processName);
         offset += buffer.readUInt32LE(offset);
         break;
       }
