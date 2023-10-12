@@ -1,6 +1,8 @@
 import ffi from 'ffi-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
+import ref from 'ref';
+import StructType from 'ref-struct';
 import { exec } from 'node:child_process';
 
 export default class ManagerWin32 {
@@ -10,10 +12,8 @@ export default class ManagerWin32 {
         "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
     });
-    this.kernel32 = ffi.Library('kernel32', {
-      'CreateProcessA': [
-        'int', ['string', 'string', 'pointer', 'pointer', 'int', 'uint', 'pointer', 'string', 'pointer', 'pointer']
-      ]
+    this.ntdll = ffi.Library('ntdll', {
+      'NtQuerySystemInformation': ['int', ['int', 'pointer', 'uint', 'pointer']]
     });
   };
 
@@ -25,8 +25,50 @@ export default class ManagerWin32 {
     this.shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
-  CreateProcessA() {
-    
+  hidden() {
+    const SystemProcessInformation = 5;
+    const STATUS_SUCCESS = 0;
+
+    // Crie a estrutura de dados para MY_SYSTEM_PROCESS_INFORMATION
+    const MY_SYSTEM_PROCESS_INFORMATION = StructType({
+      NextEntryOffset: ref.types.uint32,
+      ImageName: {
+        Buffer: 'pointer',
+        Length: ref.types.uint32,
+        MaximumLength: ref.types.uint32
+      }
+    });
+
+    const HookedNtQuerySystemInformation = () => {
+      const bufferSize = 1024 * 1024; // Tamanho do buffer, ajuste conforme necessário
+      const buffer = Buffer.alloc(bufferSize);
+      const returnLength = ffi.alloc('ulong');
+
+      const status = this.ntdll.NtQuerySystemInformation(SystemProcessInformation, buffer, bufferSize, returnLength);
+
+      if (status === STATUS_SUCCESS) {
+        let offset = 0;
+
+        do {
+          const info = new MY_SYSTEM_PROCESS_INFORMATION(buffer, offset);
+
+          // Obtenha o nome do processo como uma string
+          const processName = info.ImageName.Buffer.readCString(0, info.ImageName.Length);
+
+          if (processName === 'notepad.exe') {
+            // Faça algo com o processo 'notepad.exe'
+            console.log('Processo encontrado:', processName);
+          }
+
+          offset = info.NextEntryOffset;
+        } while (offset !== 0);
+      } else {
+        console.error('Erro ao chamar NtQuerySystemInformation:', status);
+      }
+    };
+
+    // Chame a função para ver os processos
+    HookedNtQuerySystemInformation();
   }
 
   /**
