@@ -16,7 +16,7 @@ export default class ManagerWin32 {
     return Buffer.from(`${text}\0`, "ucs2");
   }
 
-  shell32(command) {
+  ShellExecuteA(command) {
     this.Shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
