@@ -5,9 +5,14 @@ import { exec } from 'node:child_process';
 
 export default class ManagerWin32 {
   constructor() {
-    this.Shell32 = new ffi.Library("Shell32", {
+    this.shell32 = new ffi.Library("Shell32", {
       "ShellExecuteA": [
         "int32", ["int32", "string", "string", "string", "string", "int"]
+      ]
+    });
+    this.kernel32 = ffi.Library('kernel32', {
+      'CreateProcessA': [
+        'int', ['string', 'string', 'pointer', 'pointer', 'int', 'uint', 'pointer', 'string', 'pointer', 'pointer']
       ]
     });
   };
@@ -17,7 +22,7 @@ export default class ManagerWin32 {
   }
 
   ShellExecuteA(command) {
-    this.Shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
+    this.shell32.ShellExecuteA(0, "open", "powershell", command, null, 0);
   }
 
   /**
