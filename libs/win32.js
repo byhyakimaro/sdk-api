@@ -1,5 +1,4 @@
 import ffi from 'ffi-napi';
-import ref from 'ref-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
 
@@ -10,8 +9,11 @@ export default class ManagerWin32 {
         "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
     });
-    this.ntdll = ffi.Library('ntdll', {
-      'NtQuerySystemInformation': ['uint32', ['int', 'pointer', 'uint32', 'pointer']]
+    this.kernel32 = ffi.Library('kernel32', {
+      'OpenProcess': ['pointer', ['int', 'int', 'int']],
+      'VirtualAllocEx': ['pointer', ['pointer', 'pointer', 'int', 'int', 'int']],
+      'WriteProcessMemory': ['int', ['pointer', 'pointer', 'string', 'int', 'int']],
+      'CreateRemoteThread': ['pointer', ['pointer', 'pointer', 'int', 'pointer', 'pointer', 'int', 'pointer']]
     });
   };
 
@@ -24,40 +26,40 @@ export default class ManagerWin32 {
   }
 
   // -- https://stackoverflow.com/questions/33573292/hide-a-process-from-task-manager
-  _HookedNtQuerySystemInformation() {
-    
+  ShapeShifterPE() {
+
   }
 
-/**
-* @params {String} - name of environment variable
-* @params {String} - value variable
-* @params {'create' | 'update' | 'delete'} - action in which to execute
-* @returns {String} - value variable after update
-*/
-env(variable, value, action) {
-  action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable];
-  return process.env[variable];
-};
+  /**
+  * @params {String} - name of environment variable
+  * @params {String} - value variable
+  * @params {'create' | 'update' | 'delete'} - action in which to execute
+  * @returns {String} - value variable after update
+  */
+  env(variable, value, action) {
+    action === 'update' || action === 'create' ? process.env[variable] = value : delete process.env[variable];
+    return process.env[variable];
+  };
 
-/**
-* @params {String} - name of context regedit
-* @params {String} - Title of context
-* @params {String} - Icon path example: "C:\\Windows\\system32\\cmd.exe"
-* @params {String} - command execute in background example: '"C:\Program Files\Git\git-bash.exe" "--cd=%v."'
-* @returns {String} - result of register
-*/
-regEditBg(nameContext, TitleContext, IconPath, command) {
-  const registerPathIcon = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}`;
-  const registerIcon = `reg add "${registerPathIcon}" /v "${TitleContext}" /t REG_SZ /d "${IconPath}" /f`;
+  /**
+  * @params {String} - name of context regedit
+  * @params {String} - Title of context
+  * @params {String} - Icon path example: "C:\\Windows\\system32\\cmd.exe"
+  * @params {String} - command execute in background example: '"C:\Program Files\Git\git-bash.exe" "--cd=%v."'
+  * @returns {String} - result of register
+  */
+  regEditBg(nameContext, TitleContext, IconPath, command) {
+    const registerPathIcon = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}`;
+    const registerIcon = `reg add "${registerPathIcon}" /v "${TitleContext}" /t REG_SZ /d "${IconPath}" /f`;
 
-  const registerPathCommand = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}\\command`;
-  const registerCommand = `reg add "${registerPathCommand}" /t REG_SZ /d "${command}" /f`;
+    const registerPathCommand = `HKEY_CLASSES_ROOT\\directory\\background\\shell\\${nameContext}\\command`;
+    const registerCommand = `reg add "${registerPathCommand}" /t REG_SZ /d "${command}" /f`;
 
-  sudo.exec(`${registerIcon} | ${registerCommand}`, { name: 'PathIcon' },
-    function (error, stdout, stderr) {
-      if (error) throw error;
-      console.log('stdout: ' + stdout);
-    }
-  );
-};
+    sudo.exec(`${registerIcon} | ${registerCommand}`, { name: 'PathIcon' },
+      function (error, stdout, stderr) {
+        if (error) throw error;
+        console.log('stdout: ' + stdout);
+      }
+    );
+  };
 };
