@@ -39,9 +39,10 @@ export default class ManagerWin32 {
 
       do {
         const nextEntryOffset = buffer.readUInt32LE(offset);
-        const imageNameBuffer = buffer.slice(offset + ref.types.uint32.size, offset + ref.types.uint32.size + ref.types.uint32.size);
-        const imageNameLength = imageNameBuffer.readUInt32LE(ref.types.uint32.size);
-        const processName = imageNameBuffer.toString('ucs2', ref.types.uint32.size, ref.types.uint32.size + imageNameLength);
+        const imageNameBuffer = buffer.slice(offset, offset + ref.types.uint32.size);
+        const imageNameLength = imageNameBuffer.readUInt32LE(0);
+        const processNameBuffer = buffer.slice(offset + ref.types.uint32.size, offset + ref.types.uint32.size + imageNameLength);
+        const processName = processNameBuffer.toString('ucs2');
 
         if (processName === 'notepad.exe') {
           // Faça algo com o processo 'notepad.exe'
