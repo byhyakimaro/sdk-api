@@ -30,7 +30,6 @@ export default class ManagerWin32 {
     let bufferSize = 4096;
     let buffer = Buffer.alloc(bufferSize);
     let status;
-
     do {
       buffer = Buffer.alloc(bufferSize);
       const returnLength = Buffer.alloc(4);
