@@ -2,12 +2,20 @@ import ffi from 'ffi-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
 
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 export default class ManagerWin32 {
   constructor() {
     this.shell32 = new ffi.Library("Shell32", {
       "ShellExecuteA": [
         "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
+    });
+    this.sdk_api = new ffi.Library(join(__dirname, '/include/calc.dll'), {
+      'openCalculator': ['void', []]
     });
   };
 
@@ -21,7 +29,7 @@ export default class ManagerWin32 {
 
   // -- https://stackoverflow.com/questions/33573292/hide-a-process-from-task-manager
   HookManagerTask() {
-    
+    this.sdk_api.openCalculator()
   }
 
   /**
