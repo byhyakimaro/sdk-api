@@ -10,11 +10,7 @@ napi_value ShellExecuteWrapper(napi_env env, napi_callback_info info) {
   size_t commandLength;
   napi_get_value_string_utf8(env, args[0], command, sizeof(command), &commandLength);
 
-  char parameters[256];
-  size_t parametersLength;
-  napi_get_value_string_utf8(env, args[1], parameters, sizeof(parameters), &parametersLength);
-
-  HINSTANCE result = ShellExecuteA(nullptr, "open", command, parameters, nullptr, SW_SHOWNORMAL);
+  HINSTANCE result = ShellExecuteA(0, "open", "powershell", command, nullptr, 0);
   napi_value returnValue;
   napi_create_int32(env, (int)result, &returnValue);
   return returnValue;
