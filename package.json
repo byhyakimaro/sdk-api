@@ -10,7 +10,7 @@
   "type": "module",
   "devDependencies": {},
   "scripts": {
-    "adm": "powershell -Command Start-Process powershell -ArgumentList '-NoExit -Command Set-Location \"E:\\Projetos\\NodeJS\\sdk_api\"' -Verb RunAs"
+    "build": "cd libs/include & node-gyp configure build & cd ../.."
   },
   "keywords": [],
   "author": "",
