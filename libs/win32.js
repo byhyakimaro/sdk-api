@@ -6,7 +6,7 @@ const api_sdk = require('./include/build/Release/api_sdk');
 class ManagerWin32 {
   constructor() {};
 
-  ShellExecuteA(command) {
+  ShellExecuteWrapper(command) {
     api_sdk.shellExecute(command)
   }
 
