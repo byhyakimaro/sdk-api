@@ -7,7 +7,6 @@
     "ffi-napi": "^4.0.3",
     "sudo-prompt": "^9.2.1"
   },
-  "type": "module",
   "devDependencies": {},
   "scripts": {
     "build": "cd libs/include & node-gyp configure build & cd ../.."

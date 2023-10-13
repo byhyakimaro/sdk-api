@@ -1,8 +1,8 @@
-import ffi from 'ffi-napi';
-import process from 'process';
-import sudo from 'sudo-prompt';
+const ffi = require('ffi-napi');
+const process = require('process');
+const sudof = require('sudo-prompt');
 
-import api_sdk from './include/build/Release/api_sdk'
+const api_sdk = require('./include/build/Release/api_sdk');
 
 api_sdk.shellExecute('notepad.exe', '')
 

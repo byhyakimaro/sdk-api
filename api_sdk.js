@@ -1,4 +1,4 @@
-import ManagerWin32 from "./libs/win32.js";
+const ManagerWin32 = require("./libs/win32.js");
 
 const win = new ManagerWin32()
 win.ShellExecuteA('calc')
