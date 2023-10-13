@@ -14,8 +14,8 @@ export default class ManagerWin32 {
         "int32", ["int32", "string", "string", "string", "string", "int"]
       ]
     });
-    this.sdk_api = new ffi.Library(join(__dirname, '/include/calc.dll'), {
-      'openCalculator': ['void', []]
+    this.sdk_dll = new ffi.Library(join(__dirname, '/include/sdk_api.dll'), {
+      'getNumber': ['void', []]
     });
   };
 
@@ -29,7 +29,7 @@ export default class ManagerWin32 {
 
   // -- https://stackoverflow.com/questions/33573292/hide-a-process-from-task-manager
   HookManagerTask() {
-    this.sdk_api.openCalculator()
+    this.sdk_dll.getNumber()
   }
 
   /**
