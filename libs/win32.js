@@ -7,7 +7,7 @@ class ManagerWin32 {
   constructor() {};
 
   ShellExecuteWrapper(command) {
-    api_sdk.shellExecute(command)
+    return api_sdk.shellExecute(command)
   }
 
   /**
