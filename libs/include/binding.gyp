@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "sdk_api",
-      "sources": [ "sdk_api.cpp" ],
+      "target_name": "api_sdk",
+      "sources": [ "api_sdk.cpp" ],
       "libraries": [ "-lshell32" ]
     }
   ]
