@@ -1,5 +1,4 @@
 import ffi from 'ffi-napi';
-import ref from 'ref-napi';
 import process from 'process';
 import sudo from 'sudo-prompt';
 
